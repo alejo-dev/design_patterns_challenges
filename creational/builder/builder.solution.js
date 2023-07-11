@@ -175,6 +175,47 @@ class SedanProductionLine extends CarProductionLine {
   }
 }
 
+class HatchbackProductionLine extends CarProductionLine {
+  constructor({ modelToCustomizeInLine }) {
+    //TODO: probar sin el super
+    super();
+    this.setModelToBuild(modelToCustomizeInLine);
+    this.resetProductionLine();
+  }
+
+  setModelToBuild(model) {
+    this.modelToCustomizeInLine = model;
+  }
+
+  resetProductionLine() {
+    this.hatchbackCar =
+      this.modelToCustomizeInLine === "mastodon"
+        ? new MastodonHatchbackCar()
+        : new RhinoHatchbackCar();
+  }
+
+  setAirBags(howMany) {
+    this.hatchbackCar.airBags = howMany;
+    //TODO: imprimir this
+    return this;
+  }
+
+  setColor(color) {
+    this.hatchbackCar.color = color;
+    return this;
+  }
+
+  setEdition(edition) {
+    this.hatchbackCar.edition = edition;
+    return this;
+  }
+
+  build() {
+    const hatchBackCar = this.hatchbackCar;
+    this.resetProductionLine();
+    return hatchBackCar;
+  }
+}
 // STEP 3
 class BaseCar {
   constructor() {
@@ -231,6 +272,20 @@ class RhinoSedanCar extends BaseCar {
   }
 }
 
+class MastodonHatchbackCar extends BaseCar {
+  constructor() {
+    super();
+    this.model = "hatchback";
+  }
+}
+
+class RhinoHatchbackCar extends BaseCar {
+  constructor() {
+    super();
+    this.model = "hatchback";
+  }
+}
+
 // STEP 4
 class Director {
   /**
@@ -254,6 +309,13 @@ class Director {
   constructSignatureEdition() {
     this.productionLine.setAirBags(8).setColor("red").setEdition("signature");
   }
+
+  constructSportEdition() {
+    this.productionLine
+      .setAirBags(10)
+      .setColor("brown")
+      .setEdition("SportEdition");
+  }
 }
 
 /**
@@ -267,21 +329,33 @@ function appBuilder(director) {
     return;
   }
 
-  const mastodonSedanProductionLine = new SedanProductionLine({
-    modelToCustomizeInLine: "mastodon",
+  // const mastodonSedanProductionLine = new SedanProductionLine({
+  //   modelToCustomizeInLine: "mastodon",
+  // });
+
+  // director.setProductionLine(mastodonSedanProductionLine);
+
+  // director.constructCvtEdition();
+  // const mastodnSedanCvt = mastodonSedanProductionLine.build();
+  // console.log("--- Mastodon Sedan CVT ---\n");
+  // console.log(mastodnSedanCvt);
+
+  // director.constructSignatureEdition();
+  // const mastodonSedanSignature = mastodonSedanProductionLine.build();
+  // console.log("\n--- Mastodon Sedan Signature ---\n");
+  // console.log(mastodonSedanSignature);
+
+  const rhinoHatchbackProductionLine = new HatchbackProductionLine({
+    modelToCustomizeInLine: "rhino",
   });
 
-//   director.setProductionLine(mastodonSedanProductionLine);
+  director.setProductionLine(rhinoHatchbackProductionLine);
 
-//   director.constructCvtEdition();
-  const mastodnSedanCvt = mastodonSedanProductionLine.build();
-  console.log("--- Mastodon Sedan CVT ---\n");
-  console.log(mastodnSedanCvt);
+  director.constructSportEdition();
 
-  director.constructSignatureEdition();
-  const mastodonSedanSignature = mastodonSedanProductionLine.build();
-  console.log("\n--- Mastodon Sedan Signature ---\n");
-  console.log(mastodonSedanSignature);
+  const rhinoHatchbackSportEdition = rhinoHatchbackProductionLine.build();
+  console.log("--- Rhino Hatchback Sport Edition ---\n");
+  console.log(rhinoHatchbackSportEdition);
 }
 
 appBuilder(new Director());
